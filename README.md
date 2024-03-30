@@ -10,7 +10,7 @@ one-off occasions and then leave them in storage for years or decades, sometimes
 basements, degrading them to the point where their only destination is the bin.
 In order to avoid so much waste and to save the planet, fitMegut is a website that aims to put
 clothes into circulation, saving money and helping those in need. Circulation can be:
-1. By donating to charities or people displaced by war (Ukraine).
+1. By donating to charities or people displaced by war.
 2. It can be exchanged between registered or anonymous members. The interested parties
 agree on the form and/or place of the exchange and carry it out in person or by post, the
 costs being borne by the interested parties.
