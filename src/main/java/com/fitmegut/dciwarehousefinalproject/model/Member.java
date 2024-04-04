@@ -1,5 +1,6 @@
 package com.fitmegut.dciwarehousefinalproject.model;
 
+import java.sql.Date;
 import java.util.Collection;
 
 import jakarta.persistence.CascadeType;
@@ -23,41 +24,46 @@ public class Member {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "first_name")
+	@Column(name = "first_name", length = 60)
 	private String firstName;
 
-	@Column(name = "last_name")
+	@Column(name = "last_name", length = 60)
 	private String lastName;
 
-	@Column(name = "nickname")
+	@Column(name = "nickname", length = 60)
 	private String nickname;
 
 	@Column(name = "birthdate")
-	private String birthdate; // Date
+	private Date birthdate; // Date
 
-	@Column(name = "gender")
+	@Column(name = "gender", length = 10)
 	private String gender; // radio button
 
 	@Column(name = "email")
 	private String email;
 
-	@Column(name = "phone_number")
+	@Column(name = "phone_number", length = 20)
 	private String phoneNumber;
 
-	@Column(name = "country")
+	@Column(name = "country", length = 60)
 	private String country;
 
-	@Column(name = "city")
+	@Column(name = "city", length = 60)
 	private String city;
 
 	@Column(name = "address")
 	private String address;
 
-	@Column(name = "member_type")
+	@Column(name = "member_type", length = 10)
 	private String userType; // Private or company
 
-	@Column(name = "password")
+	@Column(name = "password", length = 64)
 	private String password;
+
+	@Column(name = "verification_code", length = 64)
+	private String verificationCode;
+
+	private boolean enabled;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
@@ -68,9 +74,9 @@ public class Member {
 					name = "role_id", referencedColumnName = "id"))
 	private Collection<Role> roles;
 
-	public Member(String firstName, String lastName, String nickname, String birthdate, String gender, String email,
-			String phoneNumber, String country, String city, String address, String userType, String password,
-			Collection<Role> roles) {
+	public Member(String firstName, String lastName, String nickname, Date birthdate, String gender, String email,
+				  String phoneNumber, String country, String city, String address, String userType, String password,
+				  String verificationCode, boolean enabled, Collection<Role> roles) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.nickname = nickname;
@@ -83,6 +89,8 @@ public class Member {
 		this.address = address;
 		this.userType = userType;
 		this.password = password;
+		this.verificationCode = verificationCode;
+		this.enabled = enabled;
 		this.roles = roles;
 	}
 
@@ -113,7 +121,7 @@ public class Member {
 		return nickname;
 	}
 
-	public String getBirthdate() {
+	public Date getBirthdate() {
 		return birthdate;
 	}
 
@@ -161,7 +169,7 @@ public class Member {
 		this.nickname = nickname;
 	}
 
-	public void setBirthdate(String birthdate) {
+	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
 	}
 
@@ -201,4 +209,19 @@ public class Member {
 		this.roles = roles;
 	}
 
+	public String getVerificationCode() {
+		return verificationCode;
+	}
+
+	public void setVerificationCode(String verificationCode) {
+		this.verificationCode = verificationCode;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
 }

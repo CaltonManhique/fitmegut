@@ -1,19 +1,32 @@
 package com.fitmegut.dciwarehousefinalproject.web.dto;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
+import java.sql.Date;
 
 public class MemberRegistrationDto {
 
+    @NotNull(message = "is required")
+    @Size(min = 1, message = "is required")
     private String firstName;
 
+    @NotNull(message = "is required")
+    @Size(min = 1, message = "is required")
     private String lastName;
 
     private String nickname;
 
-    private String birthdate; // Date
+    private Date birthdate; // Date
 
     private String gender; // radio button
 
+    @NotNull(message = "Required field")
+    @Size(min = 1, message = "Required field")
+    @Pattern(regexp = "^[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",
+    message = "Invalid email.")
     private String email;
 
     private String phoneNumber;
@@ -26,13 +39,21 @@ public class MemberRegistrationDto {
 
     private String userType; // Private or company
 
+//    @NotNull(message = "Required field")
+//    @Size(min = 8, message = "Required field")
+//    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
+//            message = "Password must contain at least one digit, one lowercase and uppercase letter, and one special character")
     private String password;
+
+    private String verificationCode;
+
+    private boolean enabled;
 
     public MemberRegistrationDto(){}
 
-    public MemberRegistrationDto(String firstName, String lastName, String nickname, String birthdate, String gender,
+    public MemberRegistrationDto(String firstName, String lastName, String nickname, Date birthdate, String gender,
                                  String email, String phoneNumber, String country, String city, String address,
-                                 String userType, String password) {
+                                 String userType, String password, String verificationCode, boolean enabled) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
@@ -45,6 +66,8 @@ public class MemberRegistrationDto {
         this.address = address;
         this.userType = userType;
         this.password = password;
+        this.verificationCode = verificationCode;
+        this.enabled = enabled;
     }
 
     public String getFirstName() {
@@ -71,11 +94,11 @@ public class MemberRegistrationDto {
         this.nickname = nickname;
     }
 
-    public String getBirthdate() {
+    public Date getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(String birthdate) {
+    public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
     }
 
@@ -141,5 +164,21 @@ public class MemberRegistrationDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
