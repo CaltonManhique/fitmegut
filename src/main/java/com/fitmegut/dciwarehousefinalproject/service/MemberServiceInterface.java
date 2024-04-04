@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface MemberServiceInterface  extends UserDetailsService {
 
-    Member save(MemberRegistrationDto memberRegistrationDto);
+    void save(MemberRegistrationDto memberDto, String siteURL);
 
+    boolean verify(String code);
 }
