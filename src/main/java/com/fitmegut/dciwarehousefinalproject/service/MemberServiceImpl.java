@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +60,8 @@ public class MemberServiceImpl implements MemberServiceInterface {
         try {
             sendVerificationEmail(memberDto, siteURL);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+//            throw new RuntimeException(e);
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
         }
 
     }

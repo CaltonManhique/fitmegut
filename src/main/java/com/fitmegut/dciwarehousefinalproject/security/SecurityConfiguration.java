@@ -37,9 +37,22 @@ public class SecurityConfiguration{
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
+
+        String[] staticResources  =  {
+                "/css/**",
+                "/images/**",
+                "/fonts/**",
+                "/scripts/**",
+        };
+
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/").permitAll()
-                .requestMatchers("/registration**", "/js/**", "/css/**", "/img/**").permitAll()
+                .requestMatchers("/donation**").permitAll()
+                .requestMatchers("/exchange**").permitAll()
+                .requestMatchers("/registration**").permitAll()
+                .requestMatchers("/login**").permitAll()
+                .requestMatchers("/registration/verify**").permitAll()
+                .requestMatchers(staticResources).permitAll()
                 .anyRequest()
                 .authenticated()
         )
