@@ -18,7 +18,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfiguration{
+public class SecurityConfiguration {
 
 
     private UserDetailsService userDetailsService;
@@ -30,15 +30,15 @@ public class SecurityConfiguration{
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder(){
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
 
-        String[] staticResources  =  {
+        String[] staticResources = {
                 "/css/**",
                 "/images/**",
                 "/fonts/**",
@@ -46,21 +46,26 @@ public class SecurityConfiguration{
         };
 
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/donation**").permitAll()
-                .requestMatchers("/exchange**").permitAll()
-                .requestMatchers("/registration**").permitAll()
-                .requestMatchers("/login**").permitAll()
-                .requestMatchers("/registration/verify**").permitAll()
-                .requestMatchers(staticResources).permitAll()
-                .anyRequest()
-                .authenticated()
-        )
-                .formLogin(form -> form.loginPage("/login")
-                        .loginProcessingUrl("/authenticate")
-                        .permitAll()
+                                .requestMatchers("/").permitAll()
+                                .requestMatchers("/donation/**").permitAll()
+                                .requestMatchers("/exchange/**").permitAll()
+                                .requestMatchers("/registration/**").permitAll()
+                                .requestMatchers("/login/**").permitAll()
+                                .requestMatchers("/custom-logout/signout").permitAll()
+//                .requestMatchers("/registration/verify**").permitAll()
+                .requestMatchers("/registration/passwordRecover/**").hasRole("MEMBER")
+                                .requestMatchers(staticResources).permitAll()
+                                .requestMatchers("/wardrobe/**").hasRole("MEMBER")
+                                .anyRequest()
+                                .authenticated()
                 )
-                .logout(logout -> logout.permitAll()
+                .formLogin(form -> form.loginPage("/login")
+                                .loginProcessingUrl("/authenticate")
+                                .defaultSuccessUrl("/home", true)
+                )
+                .logout((logout) -> logout.logoutUrl("/logout")
+                                .logoutSuccessUrl("/custom-logout/signout")
+                        .permitAll()
                 )
                 .exceptionHandling(conf -> conf.accessDeniedPage("/unauthorized")
                 );

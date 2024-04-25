@@ -9,6 +9,8 @@ import java.sql.Date;
 
 public class MemberRegistrationDto {
 
+    private Long id;
+
     @NotNull(message = "is required")
     @Size(min = 1, message = "is required")
     private String firstName;
@@ -51,9 +53,10 @@ public class MemberRegistrationDto {
 
     public MemberRegistrationDto(){}
 
-    public MemberRegistrationDto(String firstName, String lastName, String nickname, Date birthdate, String gender,
+    public MemberRegistrationDto(Long id,String firstName, String lastName, String nickname, Date birthdate, String gender,
                                  String email, String phoneNumber, String country, String city, String address,
                                  String userType, String password, String verificationCode, boolean enabled) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.nickname = nickname;
@@ -180,5 +183,13 @@ public class MemberRegistrationDto {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
