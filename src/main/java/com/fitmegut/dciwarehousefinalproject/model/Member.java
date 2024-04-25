@@ -3,18 +3,7 @@ package com.fitmegut.dciwarehousefinalproject.model;
 import java.sql.Date;
 import java.util.Collection;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "members", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
@@ -73,6 +62,9 @@ public class Member {
 			inverseJoinColumns = @JoinColumn(
 					name = "role_id", referencedColumnName = "id"))
 	private Collection<Role> roles;
+
+	@OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+	private Collection<Wardrobe> wardrobe;
 
 	public Member(String firstName, String lastName, String nickname, Date birthdate, String gender, String email,
 				  String phoneNumber, String country, String city, String address, String userType, String password,
@@ -223,5 +215,13 @@ public class Member {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public Collection<Wardrobe> getWardrobe() {
+		return wardrobe;
+	}
+
+	public void setWardrobe(Collection<Wardrobe> wardrobe) {
+		this.wardrobe = wardrobe;
 	}
 }

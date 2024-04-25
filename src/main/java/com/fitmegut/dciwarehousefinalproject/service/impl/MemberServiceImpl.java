@@ -1,8 +1,9 @@
-package com.fitmegut.dciwarehousefinalproject.service;
+package com.fitmegut.dciwarehousefinalproject.service.impl;
 
 import com.fitmegut.dciwarehousefinalproject.model.Member;
 import com.fitmegut.dciwarehousefinalproject.model.Role;
 import com.fitmegut.dciwarehousefinalproject.repository.MemberRepository;
+import com.fitmegut.dciwarehousefinalproject.service.interfaces.MemberServiceInterface;
 import com.fitmegut.dciwarehousefinalproject.web.dto.MemberRegistrationDto;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -29,6 +30,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberServiceInterface {
+
+    private static final int REGISTRATION = 1;
+    private static final int RESET_PASSWORD = 2;
 
     private MemberRepository memberRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -58,23 +62,22 @@ public class MemberServiceImpl implements MemberServiceInterface {
         memberRepository.save(member);
 
         try {
-            sendVerificationEmail(memberDto, siteURL);
+            sendVerificationEmail(memberDto, siteURL, REGISTRATION);
         } catch (MessagingException | UnsupportedEncodingException e) {
-//            throw new RuntimeException(e);
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
         }
 
     }
 
-    private void sendVerificationEmail(MemberRegistrationDto memberDto, String siteURL)
+    private void sendVerificationEmail(MemberRegistrationDto memberDto, String siteURL, int actionType)
             throws MessagingException, UnsupportedEncodingException {
 
         String toAddress = memberDto.getEmail();
         String fromAddress = "fitmegut@gmail.com";
         String senderName = "fitmegut - clothing donation and exchange";
-        String subject = "Please verify your registration";
+        String subject = "Please verify your [[action]]";
         String content = "Dear [[name]],<br>"
-                + "Please click the link below to verify your registration:<br>"
+                + "Please click the link below to verify your [[action]]:<br>"
                 + "<h3><a href=\"[[URL]]\" target=\"_self\">VERIFY</a></h3>"
                 + "Thank you,<br>"
                 + "fitmegut - clothing donation and exchange.";
@@ -84,6 +87,15 @@ public class MemberServiceImpl implements MemberServiceInterface {
 
         helper.setFrom(fromAddress, senderName);
         helper.setTo(toAddress);
+
+        if (actionType == REGISTRATION) {
+            subject = subject.replace("[[action]]", "registration");
+            content = content.replace("[[action]]", "registration");
+
+        } else if (actionType == RESET_PASSWORD) {
+            subject = subject.replace("[[action]]", "email to reset password");
+            content = content.replace("[[action]]", "email to reset password");
+        }
         helper.setSubject(subject);
 
         content = content.replace("[[name]]", memberDto.getFirstName() + " " + memberDto.getLastName());
@@ -108,25 +120,48 @@ public class MemberServiceImpl implements MemberServiceInterface {
 
         if (member == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
-        } else if(!member.isEnabled()){
+        } else if (!member.isEnabled()) {
             throw new DisabledException("User not verified, please verify your email before login.");
         }
         return new User(member.getEmail(), member.getPassword(), mapRolesToAuthorities(member.getRoles()));
     }
 
     @Override
-    public boolean verify(String verificationCode){
+    public boolean verify(String verificationCode) {
         Member member = memberRepository.findByVerificationCode(verificationCode);
 
-        if(member == null || member.isEnabled()){
+        if (member == null || member.isEnabled()) {
             return false;
-        }else{
+        } else {
             member.setVerificationCode(null);
             member.setEnabled(true);
             memberRepository.save(member);
 
             return true;
         }
+    }
+
+    @Override
+    public boolean sendPasswordResetEmail(String email, String siteURL) {
+        Member member = memberRepository.findByEmail(email);
+
+        if (member == null) {
+            throw new UsernameNotFoundException("Invalid username.");
+        } else {
+            MemberRegistrationDto memberDto = new MemberRegistrationDto(member.getId(), member.getFirstName(), member.getLastName(),
+                    member.getNickname(), member.getBirthdate(), member.getGender(), member.getEmail(),
+                    member.getPhoneNumber(), member.getCountry(), member.getCity(), member.getAddress(),
+                    member.getUserType(), member.getPassword(), RandomStringUtils.randomAlphanumeric(64),
+                    member.isEnabled());
+
+            try {
+                sendVerificationEmail(memberDto, siteURL, RESET_PASSWORD);
+            } catch (MessagingException | UnsupportedEncodingException e) {
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+
+        return true;
     }
 
 

@@ -1,7 +1,8 @@
 package com.fitmegut.dciwarehousefinalproject.web.controller;
 
-import com.fitmegut.dciwarehousefinalproject.service.MemberServiceInterface;
+import com.fitmegut.dciwarehousefinalproject.service.interfaces.MemberServiceInterface;
 import com.fitmegut.dciwarehousefinalproject.web.dto.MemberRegistrationDto;
+import com.fitmegut.dciwarehousefinalproject.web.dto.PasswordRecoverDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +41,40 @@ public class MemberRegistrationController {
     }
 
     @GetMapping("/verify")
-    public String verifyMember(@Param("code") String code){
-        if(memberService.verify(code)){
+    public String verifyMember(@Param("code") String code) {
+        if (memberService.verify(code)) {
             return "verify_success";
-        }else{
+        } else {
             return "verify_fail";
+        }
+    }
+
+    @GetMapping("/new-password")
+    public String showNewPassword(Model model) {
+        model.addAttribute("newPassword", new PasswordRecoverDto());
+        return "new-password";
+    }
+
+    @PostMapping("/passwordRecover")
+    public String passwordRecover(@Valid @ModelAttribute("newPassword") PasswordRecoverDto passwordRecoverDto,
+                                  HttpServletRequest request, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return "new-password";
+        }else {
+            memberService.sendPasswordResetEmail(passwordRecoverDto.getEmail(), getSiteURL(request));
+
+            return "redirect:/index";
+        }
+    }
+
+
+    @GetMapping("/password-recovering")
+    public String passwordRecovering(@Param("code") String code, Model model) {
+        if (memberService.verify(code)) {
+            return "password-recovering";
+        } else {
+            return "login";
         }
     }
 

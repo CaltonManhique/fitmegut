@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/exchange")
-public class Exchange {
+public class ExchangeController {
 
     @GetMapping
     public String exchange(){
