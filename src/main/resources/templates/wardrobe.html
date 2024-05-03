@@ -10,6 +10,7 @@
 </head>
 <body>
 
+<!--Header-->
 <div th:replace="~{fragments/home-navigation :: home-nav}"></div>
 
 <div class="container p-5 my-5 bg-dark text-white">
@@ -48,12 +49,56 @@
         </div>
     </div>
 
+    <a th:href="@{/wardrobe/add/{id}(id=${#authentication.getName()})}" class="btn btn-primary mb-3">Add Item</a>
+    <table class="table table-dark">
+        <thead>
+        <tr>
+            <th>Item ID</th>
+            <th>Category</th>
+            <th>Item Name</th>
+            <th>Brand</th>
+            <th>Color</th>
+            <th>Size</th>
+            <th>Condition</th>
+            <th>Posted</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="wardrobe : ${wardrobes}">
+            <td th:text="${wardrobe.itemId}"></td>
+            <td th:text="${wardrobe.getWardrobe().clothingCategories}"></td>
+            <td th:text="${wardrobe.itemName}"></td>
+            <td th:text="${wardrobe.itemBrand}"></td>
+            <td th:text="${wardrobe.color}"></td>
+            <td th:text="${wardrobe.size}"></td>
+            <td th:text="${wardrobe.itemCondition}"></td>
+            <td th:text="${wardrobe.getWardrobe().posted}"></td>
+            <td>
+                <a th:href="@{/wardrobe/edit/{id}(id=${wardrobe.itemId})}" class="btn btn-primary">Edit</a>
+                <a th:href="@{/wardrobe/post/{id}(id=${wardrobe.itemId})}"
+                   class="btn btn-primary">Post/Unpost</a>
+
+                <a th:href="@{/wardrobe/delete/{id}(id=${wardrobe.itemId})}"
+                   class="btn btn-danger"
+                   onclick="if(!(confirm('Sure you want to delete this Item?'))) return false">Remove</a>
+
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${wardrobes.isEmpty()}" class="alert alert-info" role="alert">
+        Wardrobe is empty.
+    </div>
 
 </div>
 
+<br>
+<br>
 
+<!--Footer-->
 <div th:replace="~{fragments/footer :: footer}"></div>
-
 </body>
 </html>
 

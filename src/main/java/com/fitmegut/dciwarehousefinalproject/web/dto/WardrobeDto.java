@@ -12,10 +12,18 @@ public class WardrobeDto {
     private String clothingCategories; // dropdown list
     private boolean posted;
 
+    private MemberRegistrationDto memberDto;
+
     public WardrobeDto() {
     }
 
     public WardrobeDto(String clothingCategories, boolean posted) {
+        this.clothingCategories = clothingCategories;
+        this.posted = posted;
+    }
+
+    public WardrobeDto(long id, String clothingCategories, boolean posted) {
+        this.id = id;
         this.clothingCategories = clothingCategories;
         this.posted = posted;
     }
@@ -42,5 +50,13 @@ public class WardrobeDto {
 
     public void setPosted(boolean posted) {
         this.posted = posted;
+    }
+
+    public MemberRegistrationDto getMemberDto() {
+        return memberDto;
+    }
+
+    public void setMemberDto(MemberRegistrationDto memberDto) {
+        this.memberDto = memberDto;
     }
 }

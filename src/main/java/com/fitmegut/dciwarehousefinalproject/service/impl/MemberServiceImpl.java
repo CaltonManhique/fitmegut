@@ -164,5 +164,32 @@ public class MemberServiceImpl implements MemberServiceInterface {
         return true;
     }
 
+    @Override
+    public MemberRegistrationDto findByEmail(String email) {
+
+        Member member = memberRepository.findByEmail(email);
+
+        if (member == null) {
+            throw new UsernameNotFoundException("Invalid username.");
+        } else {
+            return new MemberRegistrationDto(member.getId(), member.getFirstName(), member.getLastName(),
+                    member.getNickname(), member.getBirthdate(), member.getGender(), member.getEmail(),
+                    member.getPhoneNumber(), member.getCountry(), member.getCity(), member.getAddress(),
+                    member.getUserType(), member.getPassword(), member.getVerificationCode(),
+                    member.isEnabled());
+        }
+    }
+
+    @Override
+    public Member findMemberByEmail(String email) {
+
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            throw new UsernameNotFoundException("Member not found.");
+        } else {
+            return member;
+        }
+    }
+
 
 }

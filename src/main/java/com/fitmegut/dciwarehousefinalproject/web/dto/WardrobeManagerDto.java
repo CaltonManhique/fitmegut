@@ -2,15 +2,15 @@ package com.fitmegut.dciwarehousefinalproject.web.dto;
 
 public class WardrobeManagerDto {
 
-    private WardrobeDto wardrobe = new WardrobeDto();
+    private WardrobeDto wardrobeDto = new WardrobeDto();
     private ItemDto itemDto = new ItemDto();
 
-    public WardrobeDto getWardrobe() {
-        return wardrobe;
+    public WardrobeDto getWardrobeDto() {
+        return wardrobeDto;
     }
 
-    public void setWardrobe(WardrobeDto wardrobe) {
-        this.wardrobe = wardrobe;
+    public void setWardrobeDto(WardrobeDto wardrobeDto) {
+        this.wardrobeDto = wardrobeDto;
     }
 
     public ItemDto getItemDto() {

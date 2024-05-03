@@ -224,4 +224,6 @@ public class Member {
 	public void setWardrobe(Collection<Wardrobe> wardrobe) {
 		this.wardrobe = wardrobe;
 	}
+
+
 }
