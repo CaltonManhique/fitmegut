@@ -25,7 +25,10 @@ public class Wardrobe {
 
     public Wardrobe() {}
 
-    public Wardrobe(String clothingCategories, boolean posted) {}
+    public Wardrobe(String clothingCategories, boolean posted) {
+        this.clothingCategories = clothingCategories;
+        this.posted = posted;
+    }
 
     public long getId() {
         return id;
