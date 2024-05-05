@@ -1,5 +1,6 @@
 package com.fitmegut.dciwarehousefinalproject.web.dto;
 
+import com.fitmegut.dciwarehousefinalproject.model.Member;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -26,6 +27,13 @@ public class WardrobeDto {
         this.id = id;
         this.clothingCategories = clothingCategories;
         this.posted = posted;
+    }
+
+    public WardrobeDto(long id, String clothingCategories, boolean posted, MemberRegistrationDto memberDto) {
+        this.id = id;
+        this.clothingCategories = clothingCategories;
+        this.posted = posted;
+        this.memberDto = memberDto;
     }
 
     public long getId() {

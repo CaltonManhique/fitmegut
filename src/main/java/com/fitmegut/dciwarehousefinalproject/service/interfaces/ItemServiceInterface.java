@@ -1,18 +1,20 @@
 package com.fitmegut.dciwarehousefinalproject.service.interfaces;
 
-import com.fitmegut.dciwarehousefinalproject.model.Item;
 import com.fitmegut.dciwarehousefinalproject.web.dto.ItemDto;
 
 import java.util.List;
 
 public interface ItemServiceInterface {
 
-    // Method for creation and modifications
+    // Method for creation
     void save(ItemDto itemDto);
 
     void deleteItemById(Long id);
 
-    Item findById(Long id);
+    ItemDto findById(Long id);
 
-    List<Item> findAll();
+    List<ItemDto> findAll();
+
+    void update(ItemDto itemDto);
+
 }

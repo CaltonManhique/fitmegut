@@ -48,36 +48,38 @@
     <p>“Nothing is old, it's all about how you look at things”</p>
     <hr style="height: 10px">
 
-    <form class="row g-3" th:action="@{/wardrobe/add/{id}(id=${#authentication.getName()})}"
-          method="POST" th:object="${newItem}">
+    <form class="row g-3" th:action="@{/wardrobe/edit/{id}(id=${editItem.itemId})}"
+          method="POST" th:object="${editItem}">
+
+        <input type="hidden" th:field="*{wardrobeDto.id}">
 
         <div class="col-md-6">
             <label class="form-label" for="itemName">
                 Item Name
             </label>
-            <input id="itemName" class="form-control" th:field="*{itemDto.itemName}" required
+            <input id="itemName" class="form-control" th:field="*{itemName}" required
                    autofocus="autofocus"/>
-            <span th:if="${#fields.hasErrors('itemDto.itemName')}" th:errors="*{itemDto.itemName}" class="error"></span>
+            <span th:if="${#fields.hasErrors('itemName')}" th:errors="*{itemName}" class="error"></span>
         </div>
         <div class="col-md-6">
             <label class="form-label" for="brand">
                 Brand
             </label>
-            <input id="brand" class="form-control" th:field="*{itemDto.itemBrand}" required autofocus="autofocus"/>
-            <span th:if="${#fields.hasErrors('itemDto.itemBrand')}" th:errors="*{itemDto.itemBrand}" class="error"></span>
+            <input id="brand" class="form-control" th:field="*{itemBrand}" required autofocus="autofocus"/>
+            <span th:if="${#fields.hasErrors('itemBrand')}" th:errors="*{itemBrand}" class="error"></span>
         </div>
 
         <div class="col-md-6">
             <label class="form-label" for="color">
                 Color
             </label>
-            <input id="color" class="form-control" th:field="*{itemDto.color}" autofocus="autofocus"/>
+            <input id="color" class="form-control" th:field="*{color}" autofocus="autofocus"/>
         </div>
         <div class="col-md-6">
             <label class="form-label" for="size">
                 Size
             </label>
-            <input id="size" class="form-control" th:field="*{itemDto.size}" autofocus="autofocus"/>
+            <input id="size" class="form-control" th:field="*{size}" autofocus="autofocus"/>
         </div>
 
         <div class="col-md-6">
@@ -87,6 +89,7 @@
                 <option value="SWEATER">SWEATER</option>
                 <option value="DRESS">DRESS</option>
                 <option value="HOODIES">HOODIES</option>
+                <option value="SPORT">SPORT</option>
                 <option value="T_SHIRT">T_SHIRT</option>
                 <option value="SHORTS">SHORTS</option>
                 <option value="SKIRT">SKIRT</option>
@@ -104,7 +107,7 @@
 
         <div class="col-md-6">
             <label class="form-label">Clothing Condition</label>
-            <select class="form-select" th:field="*{itemDto.itemCondition}">
+            <select class="form-select" th:field="*{itemCondition}">
                 <option value="" selected></option>
                 <option value="BRAND_NEW">NEW WITHOUT TAGS</option>
                 <option value="NEW">NEW WITH TAGS</option>
@@ -117,7 +120,7 @@
 
         <div class="col-md-6">
             <label class="form-label" for="description">
-                Description
+                Description/Observations
             </label>
             <textarea class="form-control" id="description" rows="3"></textarea>
         </div>
@@ -126,13 +129,13 @@
             <label class="form-label" for="image">
                 Upload Picture
             </label>
-            <input id="image" class="form-control" th:field="*{itemDto.image}" placeholder="size until 5MB "
+            <input id="image" class="form-control" th:field="*{image}" placeholder="size until 5MB "
                    autofocus="autofocus"/>
         </div>
 
         <div class="form-group">
             <button type="submit" class="btn btn-primary">
-                Add Item
+                Save Changes
             </button>
             <a class="btn btn-outline-primary" href="/" th:href="@{/wardrobe/items}">Cancel</a>
 
@@ -143,7 +146,6 @@
     <div th:replace="~{fragments/footer :: footer}"></div>
 
 </div>
-
 
 </body>
 

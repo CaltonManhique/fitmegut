@@ -88,18 +88,20 @@ public class MemberServiceImpl implements MemberServiceInterface {
         helper.setFrom(fromAddress, senderName);
         helper.setTo(toAddress);
 
+        String verifyURL = "";
         if (actionType == REGISTRATION) {
             subject = subject.replace("[[action]]", "registration");
             content = content.replace("[[action]]", "registration");
+            verifyURL = siteURL + "/registration/verify?code=" + memberDto.getVerificationCode();
 
         } else if (actionType == RESET_PASSWORD) {
             subject = subject.replace("[[action]]", "email to reset password");
             content = content.replace("[[action]]", "email to reset password");
+            verifyURL = siteURL + "/registration/passwordRecovering?code=" + memberDto.getVerificationCode();
         }
         helper.setSubject(subject);
 
         content = content.replace("[[name]]", memberDto.getFirstName() + " " + memberDto.getLastName());
-        String verifyURL = siteURL + "/registration/verify?code=" + memberDto.getVerificationCode();
 
         content = content.replace("[[URL]]", verifyURL);
 
@@ -127,18 +129,33 @@ public class MemberServiceImpl implements MemberServiceInterface {
     }
 
     @Override
-    public boolean verify(String verificationCode) {
+    public boolean verify(String verificationCode, int actionType) {
         Member member = memberRepository.findByVerificationCode(verificationCode);
 
-        if (member == null || member.isEnabled()) {
-            return false;
-        } else {
-            member.setVerificationCode(null);
-            member.setEnabled(true);
-            memberRepository.save(member);
+        return switch (actionType) {
+            case REGISTRATION -> {
+                if (member == null || member.isEnabled()) {
+                    yield false;
+                } else {
+                    member.setVerificationCode(null);
+                    member.setEnabled(true);
+                    memberRepository.save(member);
 
-            return true;
-        }
+                    yield true;
+                }
+            }
+            case RESET_PASSWORD -> {
+                if (member == null || !member.isEnabled()) {
+                    yield false;
+                } else {
+                    member.setVerificationCode(null);
+                    memberRepository.save(member);
+
+                    yield true;
+                }
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + actionType);
+        };
     }
 
     @Override
@@ -148,11 +165,14 @@ public class MemberServiceImpl implements MemberServiceInterface {
         if (member == null) {
             throw new UsernameNotFoundException("Invalid username.");
         } else {
-            MemberRegistrationDto memberDto = new MemberRegistrationDto(member.getId(), member.getFirstName(), member.getLastName(),
-                    member.getNickname(), member.getBirthdate(), member.getGender(), member.getEmail(),
-                    member.getPhoneNumber(), member.getCountry(), member.getCity(), member.getAddress(),
-                    member.getUserType(), member.getPassword(), RandomStringUtils.randomAlphanumeric(64),
-                    member.isEnabled());
+            String randomCode = RandomStringUtils.randomAlphanumeric(64);
+            MemberRegistrationDto memberDto = new MemberRegistrationDto(member.getId(), member.getFirstName(),
+                    member.getLastName(), member.getNickname(), member.getBirthdate(), member.getGender(),
+                    member.getEmail(), member.getPhoneNumber(), member.getCountry(), member.getCity(), member.getAddress(),
+                    member.getUserType(), member.getPassword(), randomCode, member.isEnabled());
+
+            member.setVerificationCode(randomCode);
+            memberRepository.save(member);
 
             try {
                 sendVerificationEmail(memberDto, siteURL, RESET_PASSWORD);
@@ -189,6 +209,18 @@ public class MemberServiceImpl implements MemberServiceInterface {
         } else {
             return member;
         }
+    }
+
+    @Override
+    public void save(MemberRegistrationDto memberDto) {
+
+        Member member = new Member(memberDto.getId(), memberDto.getFirstName(), memberDto.getLastName(),
+                memberDto.getNickname(), memberDto.getBirthdate(), memberDto.getGender(), memberDto.getEmail(),
+                memberDto.getPhoneNumber(), memberDto.getCountry(), memberDto.getCity(), memberDto.getAddress(),
+                memberDto.getUserType(), bCryptPasswordEncoder.encode(memberDto.getPassword()), memberDto.getVerificationCode(),
+                memberDto.isEnabled());
+
+        memberRepository.save(member);
     }
 
 

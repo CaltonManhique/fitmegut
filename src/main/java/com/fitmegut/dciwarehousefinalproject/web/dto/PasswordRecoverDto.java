@@ -14,8 +14,16 @@ public class PasswordRecoverDto {
 
     private String oldPassword;
 
+    @NotNull(message = "Required field")
+    @Size(min = 8, message = "Password must contain at least 8 characters")
+    @Pattern(regexp = ".*[A-Z].*.*[0-9].*",
+            message = "Password must contain at least one digit, one lowercase and uppercase letter")
     private String newPassword;
 
+    @NotNull(message = "Required field")
+    @Size(min = 8, message = "Password must contain at least 8 characters")
+    @Pattern(regexp = ".*[A-Z].*.*[0-9].*",
+            message = "Password must contain at least one digit, one lowercase and uppercase letter")
     private String repeatPassword;
 
     public String getEmail() {

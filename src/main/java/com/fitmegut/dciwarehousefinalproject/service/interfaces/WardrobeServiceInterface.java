@@ -12,8 +12,8 @@ public interface WardrobeServiceInterface {
 
     void deleteWardrobeEntryById(Long id);
 
-    List<Wardrobe> findAll();
+    List<WardrobeDto> findAll();
 
-    Wardrobe findById(Long id);
+    void update(WardrobeDto wardrobeDto);
 
 }

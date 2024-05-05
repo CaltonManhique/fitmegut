@@ -8,12 +8,14 @@ public interface MemberServiceInterface  extends UserDetailsService {
 
     void save(MemberRegistrationDto memberDto, String siteURL);
 
-    boolean verify(String code);
+    boolean verify(String code, int actionType);
 
     boolean sendPasswordResetEmail(String email, String siteURL);
 
     MemberRegistrationDto findByEmail(String email);
 
     Member findMemberByEmail(String email);
+
+    void save(MemberRegistrationDto member);
 
 }

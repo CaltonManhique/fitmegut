@@ -46,6 +46,19 @@ public class ItemDto {
         this.image = image;
     }
 
+    public ItemDto(Long itemId,String itemName, String itemBrand, String size, String color, String itemCondition,
+                   String description, String image, WardrobeDto wardrobeDto) {
+        this.itemId = itemId;
+        this.itemName = itemName;
+        this.itemBrand = itemBrand;
+        this.size = size;
+        this.color = color;
+        this.itemCondition = itemCondition;
+        this.description = description;
+        this.image = image;
+        this.wardrobeDto = wardrobeDto;
+    }
+
     public long getItemId() {
         return itemId;
     }

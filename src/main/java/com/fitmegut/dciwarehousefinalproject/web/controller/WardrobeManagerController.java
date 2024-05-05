@@ -1,12 +1,7 @@
 package com.fitmegut.dciwarehousefinalproject.web.controller;
 
-import com.fitmegut.dciwarehousefinalproject.service.interfaces.ItemServiceInterface;
-import com.fitmegut.dciwarehousefinalproject.service.interfaces.MemberServiceInterface;
-import com.fitmegut.dciwarehousefinalproject.service.interfaces.WardrobeServiceInterface;
-import com.fitmegut.dciwarehousefinalproject.web.dto.ItemDto;
-import com.fitmegut.dciwarehousefinalproject.web.dto.MemberRegistrationDto;
-import com.fitmegut.dciwarehousefinalproject.web.dto.WardrobeDto;
-import com.fitmegut.dciwarehousefinalproject.web.dto.WardrobeManagerDto;
+import com.fitmegut.dciwarehousefinalproject.service.interfaces.*;
+import com.fitmegut.dciwarehousefinalproject.web.dto.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -15,6 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/wardrobe")
@@ -39,31 +37,51 @@ public class WardrobeManagerController {
 
         memberRegistrationDto = memberService.findByEmail(email);
         model.addAttribute("member", memberRegistrationDto);
-        model.addAttribute("wardrobes", itemService.findAll());
 
-        return "wardrobe";
+        Long id = memberRegistrationDto.getId();
+
+        List<ItemDto> items = itemService.findAll();
+        List<ItemDto> filteredItems = new ArrayList<>();
+        List<WardrobeDto> wardrobesDto = wardrobeService.findAll();
+
+        //Optimize
+        for (ItemDto itemDto : items) {
+            for (WardrobeDto wardrobeDto : wardrobesDto) {
+                if ((wardrobeDto.getMemberDto().getId().equals(id)) &&
+                        (wardrobeDto.getId() == itemDto.getWardrobeDto().getId())) {
+                    filteredItems.add(itemDto);
+                }
+            }
+        }
+
+        model.addAttribute("wardrobes", filteredItems);
+
+        return "wardrobe/wardrobe";
     }
 
-    @GetMapping("/add/{id}")
-    public String addItem(@PathVariable String id, Model model) {
+    @GetMapping("/add")
+    public String addItem(Model model) {
         model.addAttribute("newItem", new WardrobeManagerDto());
-        return "add-item";
+        return "wardrobe/add-item";
     }
 
-    @PostMapping("/add/{id}")
-    public String processAddItem(@Valid @PathVariable String id, @ModelAttribute("newItem") WardrobeManagerDto wardrobeManagerDto,
+    @PostMapping("/add")
+    public String processAddItem(@Valid @ModelAttribute("newItem") WardrobeManagerDto wardrobeManagerDto,
                                  BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return "add-item";
+            return "wardrobe/add-item";
         }
 
-        WardrobeDto wardrobeDto = new WardrobeDto(wardrobeManagerDto.getWardrobeDto().getClothingCategories(),false);
-        wardrobeDto.setMemberDto(memberService.findByEmail(id));
+        Authentication loggedMember = SecurityContextHolder.getContext().getAuthentication();
+        String email = loggedMember.getName();
 
-        WardrobeDto savedWardrobeDto =  wardrobeService.save(wardrobeDto);
+        WardrobeDto wardrobeDto = new WardrobeDto(wardrobeManagerDto.getWardrobeDto().getClothingCategories(), false);
+        wardrobeDto.setMemberDto(memberService.findByEmail(email));
 
-        ItemDto itemDto  = new ItemDto(wardrobeManagerDto.getItemDto().getItemName(), wardrobeManagerDto.getItemDto().getItemBrand(),
+        WardrobeDto savedWardrobeDto = wardrobeService.save(wardrobeDto);
+
+        ItemDto itemDto = new ItemDto(wardrobeManagerDto.getItemDto().getItemName(), wardrobeManagerDto.getItemDto().getItemBrand(),
                 wardrobeManagerDto.getItemDto().getSize(), wardrobeManagerDto.getItemDto().getColor(),
                 wardrobeManagerDto.getItemDto().getItemCondition(), wardrobeManagerDto.getItemDto().getDescription(),
                 wardrobeManagerDto.getItemDto().getImage());
@@ -76,18 +94,54 @@ public class WardrobeManagerController {
 
     @GetMapping("/edit/{id}")
     public String editItem(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wardrobe", new WardrobeManagerDto());
-        return "redirect:/wardrobe";
+
+        model.addAttribute("editItem", itemService.findById(id));
+        return "wardrobe/edit-item";
     }
 
-    @PostMapping("/post/{id}")
-    public String postItem(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("wardrobe", new WardrobeManagerDto());
-        return "redirect:/wardrobe";
+    @PostMapping("/edit/{id}")
+    public String processEditItem(@Valid @PathVariable("id") Long id, @ModelAttribute("editItem") ItemDto dto,
+                                  BindingResult bindingResult) {
+        System.out.println(id + " Controller" + dto.getItemName());
+        if (bindingResult.hasErrors()) {
+            return "wardrobe/edit-item";
+        }
+
+        WardrobeDto wardrobeDto = new WardrobeDto(dto.getWardrobeDto().getId(), dto.getWardrobeDto().getClothingCategories(),
+                dto.getWardrobeDto().isPosted());
+        wardrobeService.update(wardrobeDto);
+
+        ItemDto itemDto = new ItemDto(id, dto.getItemName(), dto.getItemBrand(), dto.getSize(), dto.getColor(),
+                dto.getItemCondition(), dto.getDescription(), dto.getImage(), wardrobeDto);
+
+        itemService.update(itemDto);
+
+        return "redirect:/wardrobe/items";
+    }
+
+    @GetMapping("/post/{id}")
+    public String postItem(@PathVariable("id") Long id) {
+        ItemDto itemDto = itemService.findById(id);
+        WardrobeDto wardrobeDto = null;
+
+        if (itemDto.getWardrobeDto().isPosted()) {
+            wardrobeDto = new WardrobeDto(itemDto.getWardrobeDto().getId(), itemDto.getWardrobeDto().getClothingCategories(),
+                    false);
+        } else {
+            wardrobeDto = new WardrobeDto(itemDto.getWardrobeDto().getId(), itemDto.getWardrobeDto().getClothingCategories(),
+                    true);
+        }
+        wardrobeService.update(wardrobeDto);
+
+        return "redirect:/wardrobe/items";
     }
 
     @RequestMapping("/delete/{id}")
     public String deleteTeacher(@PathVariable Long id) {
-        return "redirect:/wardrobe";
+        ItemDto itemDto = itemService.findById(id);
+        itemService.deleteItemById(id);
+        wardrobeService.deleteWardrobeEntryById(itemDto.getWardrobeDto().getId());
+
+        return "redirect:/wardrobe/items";
     }
 }
