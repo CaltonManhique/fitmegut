@@ -1,8 +1,7 @@
 package com.fitmegut.dciwarehousefinalproject.web.controller;
 
 import com.fitmegut.dciwarehousefinalproject.service.interfaces.MemberServiceInterface;
-import com.fitmegut.dciwarehousefinalproject.web.dto.MemberRegistrationDto;
-import com.fitmegut.dciwarehousefinalproject.web.dto.PasswordRecoverDto;
+import com.fitmegut.dciwarehousefinalproject.web.dto.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class MemberRegistrationController {
     @GetMapping
     public String showRegistration(Model model) {
         model.addAttribute("member", new MemberRegistrationDto());
-        return "registration";
+        return "member/registration";
     }
 
     @PostMapping
@@ -36,46 +35,59 @@ public class MemberRegistrationController {
             return "registration";
         } else {
             memberService.save(registrationDto, getSiteURL(request));
-            return "redirect:/registration?success";
+            return "member/verify_email";
         }
     }
 
     @GetMapping("/verify")
     public String verifyMember(@Param("code") String code) {
-        if (memberService.verify(code)) {
-            return "verify_success";
+        if (memberService.verify(code, 1)) {
+            return "member/verify_success";
         } else {
-            return "verify_fail";
+            return "member/verify_fail";
         }
     }
 
     @GetMapping("/new-password")
     public String showNewPassword(Model model) {
-        model.addAttribute("newPassword", new PasswordRecoverDto());
-        return "new-password";
+        model.addAttribute("newPassword", new SendEmailDto());
+        return "member/new-password";
     }
 
     @PostMapping("/passwordRecover")
-    public String passwordRecover(@Valid @ModelAttribute("newPassword") PasswordRecoverDto passwordRecoverDto,
+    public String passwordRecover(@Valid @ModelAttribute("newPassword") SendEmailDto emailDto,
                                   HttpServletRequest request, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            return "new-password";
-        }else {
-            memberService.sendPasswordResetEmail(passwordRecoverDto.getEmail(), getSiteURL(request));
+            return "member/new-password";
+        } else {
+            memberService.sendPasswordResetEmail(emailDto.getEmail(), getSiteURL(request));
 
-            return "redirect:/index";
+            return "member/verify_email";
         }
     }
 
-
-    @GetMapping("/password-recovering")
+    @GetMapping("/passwordRecovering")
     public String passwordRecovering(@Param("code") String code, Model model) {
-        if (memberService.verify(code)) {
-            return "password-recovering";
+        if (memberService.verify(code, 2)) {
+            model.addAttribute("newPassword", new PasswordRecoverDto());
+            return "member/password-recovering";
         } else {
-            return "login";
+            return "member/verify_fail";
         }
+    }
+
+    @PostMapping("/processNewPwd")
+    public String processNewPassword(@Valid @ModelAttribute("newPassword") PasswordRecoverDto passwordRecoverDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors() || !passwordRecoverDto.getNewPassword().equals(passwordRecoverDto.getRepeatPassword())) {
+            return "member/password-recovering";
+        }
+
+        MemberRegistrationDto registrationDto = memberService.findByEmail(passwordRecoverDto.getEmail());
+        registrationDto.setPassword(passwordRecoverDto.getNewPassword());
+        memberService.save(registrationDto);
+
+        return "redirect:/login";
     }
 
     private String getSiteURL(HttpServletRequest request) {

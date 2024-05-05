@@ -24,21 +24,21 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body">
-            <a class="btn" href="/" th:href="@{/wallet}">Wallet</a>
+            <a class="btn" href="/static" th:href="@{/wallet}">Wallet</a>
             <br>
-            <a class="btn" href="/" th:href="@{/wardrobe/items}">Wardrobe</a>
+            <a class="btn" href="/static" th:href="@{/wardrobe/items}">Wardrobe</a>
             <br>
-            <a class="btn" href="/" th:href="@{/exchangeRequests}">Exchange Requests</a>
+            <a class="btn" href="/static" th:href="@{/exchangeRequests}">Exchange Requests</a>
             <br>
             <hr>
 
             <a class="btn" data-bs-toggle="collapse" data-bs-target="#settings"><h4>Settings</h4></a>
             <div id="settings" class="collapse show">
-                <a class="btn" href="/" th:href="@{/editProfile}">Edit Profile</a>
+                <a class="btn" href="/static" th:href="@{/editProfile}">Edit Profile</a>
                 <br>
-                <a class="btn" href="/" th:href="@{/changePwd}">Change Password</a>
+                <a class="btn" href="/static" th:href="@{/changePwd}">Change Password</a>
                 <br>
-                <a class="btn" href="/" th:href="@{/deleteAccount}">Delete account</a>
+                <a class="btn" href="/static" th:href="@{/deleteAccount}">Delete account</a>
             </div>
 
             <hr>
@@ -49,7 +49,7 @@
         </div>
     </div>
 
-    <a th:href="@{/wardrobe/add/{id}(id=${#authentication.getName()})}" class="btn btn-primary mb-3">Add Item</a>
+    <a th:href="@{/wardrobe/add}" class="btn btn-primary mb-3">Add Item</a>
     <table class="table table-dark">
         <thead>
         <tr>
@@ -67,13 +67,13 @@
         <tbody>
         <tr th:each="wardrobe : ${wardrobes}">
             <td th:text="${wardrobe.itemId}"></td>
-            <td th:text="${wardrobe.getWardrobe().clothingCategories}"></td>
+            <td th:text="${wardrobe.wardrobeDto.clothingCategories}"></td>
             <td th:text="${wardrobe.itemName}"></td>
             <td th:text="${wardrobe.itemBrand}"></td>
             <td th:text="${wardrobe.color}"></td>
             <td th:text="${wardrobe.size}"></td>
             <td th:text="${wardrobe.itemCondition}"></td>
-            <td th:text="${wardrobe.getWardrobe().posted}"></td>
+            <td th:text="${wardrobe.wardrobeDto.posted}"></td>
             <td>
                 <a th:href="@{/wardrobe/edit/{id}(id=${wardrobe.itemId})}" class="btn btn-primary">Edit</a>
                 <a th:href="@{/wardrobe/post/{id}(id=${wardrobe.itemId})}"

@@ -30,6 +30,19 @@ public class Wardrobe {
         this.posted = posted;
     }
 
+    public Wardrobe(long id, String clothingCategories, boolean posted) {
+        this.id = id;
+        this.clothingCategories = clothingCategories;
+        this.posted = posted;
+    }
+
+    public Wardrobe(long id, String clothingCategories, boolean posted, Member member) {
+        this.id = id;
+        this.clothingCategories = clothingCategories;
+        this.posted = posted;
+        this.member = member;
+    }
+
     public long getId() {
         return id;
     }

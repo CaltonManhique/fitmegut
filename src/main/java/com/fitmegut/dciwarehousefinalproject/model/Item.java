@@ -11,10 +11,10 @@ public class Item {
 	@Column(name = "id")
 	private long itemId;
 
-	@Column(name = "itme_name", length = 60)
+	@Column(name = "item_name", length = 60)
 	private String itemName;
 
-	@Column(name = "itme_brand", length = 60)
+	@Column(name = "item_brand", length = 60)
 	private String itemBrand;
 
 	@Column(name = "size", length = 10)
@@ -23,7 +23,7 @@ public class Item {
 	@Column(name = "color", length = 30)
 	private String color;
 
-	@Column(name = "itme_condition", length = 60)
+	@Column(name = "item_condition", length = 60)
 	private String itemCondition;
 
 	private String description;
@@ -39,6 +39,18 @@ public class Item {
 	}
 
 	public Item(String itemName, String itemBrand, String size, String color, String itemCondition, String description, String image) {
+		this.itemName = itemName;
+		this.itemBrand = itemBrand;
+		this.size = size;
+		this.color = color;
+		this.itemCondition = itemCondition;
+		this.description = description;
+		this.image = image;
+	}
+
+	public Item(long itemId, String itemName, String itemBrand, String size, String color, String itemCondition,
+				String description, String image) {
+		this.itemId = itemId;
 		this.itemName = itemName;
 		this.itemBrand = itemBrand;
 		this.size = size;

@@ -86,6 +86,26 @@ public class Member {
 		this.roles = roles;
 	}
 
+	public Member(Long id,String firstName, String lastName, String nickname, Date birthdate, String gender, String email,
+				  String phoneNumber, String country, String city, String address, String userType, String password,
+				  String verificationCode, boolean enabled) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.nickname = nickname;
+		this.birthdate = birthdate;
+		this.gender = gender;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.country = country;
+		this.city = city;
+		this.address = address;
+		this.userType = userType;
+		this.password = password;
+		this.verificationCode = verificationCode;
+		this.enabled = enabled;
+	}
+
 	public Member() {
 	}
 
