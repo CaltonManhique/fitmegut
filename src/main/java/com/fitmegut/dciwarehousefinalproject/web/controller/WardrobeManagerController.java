@@ -10,13 +10,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/wardrobe")
 public class WardrobeManagerController {
+
+    private static final String UPLOADED_ITEMS_DIRECTORY = System.getProperty("user.dir") + "/items";
 
     private ItemServiceInterface itemService;
     private WardrobeServiceInterface wardrobeService;
@@ -67,7 +74,7 @@ public class WardrobeManagerController {
 
     @PostMapping("/add")
     public String processAddItem(@Valid @ModelAttribute("newItem") WardrobeManagerDto wardrobeManagerDto,
-                                 BindingResult bindingResult) {
+                                 BindingResult bindingResult, @RequestParam("image") MultipartFile image, Model model) throws IOException {
 
         if (bindingResult.hasErrors()) {
             return "wardrobe/add-item";
@@ -79,17 +86,32 @@ public class WardrobeManagerController {
         WardrobeDto wardrobeDto = new WardrobeDto(wardrobeManagerDto.getWardrobeDto().getClothingCategories(), false);
         wardrobeDto.setMemberDto(memberService.findByEmail(email));
 
+        // Image handling
+        StringBuilder fileNames = new StringBuilder();
+        if(image != null && !image.isEmpty()) {
+            Path fileNameAndPath = Paths.get(UPLOADED_ITEMS_DIRECTORY, image.getOriginalFilename());
+            fileNames.append(image.getOriginalFilename());
+            Files.write(fileNameAndPath, image.getBytes());
+        }
+
         WardrobeDto savedWardrobeDto = wardrobeService.save(wardrobeDto);
 
-        ItemDto itemDto = new ItemDto(wardrobeManagerDto.getItemDto().getItemName(), wardrobeManagerDto.getItemDto().getItemBrand(),
-                wardrobeManagerDto.getItemDto().getSize(), wardrobeManagerDto.getItemDto().getColor(),
-                wardrobeManagerDto.getItemDto().getItemCondition(), wardrobeManagerDto.getItemDto().getDescription(),
-                wardrobeManagerDto.getItemDto().getImage());
-
-        itemDto.setWardrobeDto(savedWardrobeDto);
+        ItemDto itemDto = getItemDto(wardrobeManagerDto, fileNames, savedWardrobeDto);
         itemService.save(itemDto);
 
         return "redirect:/wardrobe/items";
+    }
+
+    private static ItemDto getItemDto(WardrobeManagerDto wardrobeManagerDto, StringBuilder fileNames, WardrobeDto savedWardrobeDto) {
+        String imageName = UPLOADED_ITEMS_DIRECTORY + "/" + fileNames.toString();
+        System.out.println(imageName);
+        ItemDto itemDto = new ItemDto(wardrobeManagerDto.getItemDto().getItemName(), wardrobeManagerDto.getItemDto().getItemBrand(),
+                wardrobeManagerDto.getItemDto().getSize(), wardrobeManagerDto.getItemDto().getColor(),
+                wardrobeManagerDto.getItemDto().getItemCondition(), wardrobeManagerDto.getItemDto().getDescription(),
+                /*wardrobeManagerDto.getItemDto().getImage()*/ imageName);
+
+        itemDto.setWardrobeDto(savedWardrobeDto);
+        return itemDto;
     }
 
     @GetMapping("/edit/{id}")

@@ -28,7 +28,7 @@ public class Item {
 
 	private String description;
 
-	@Column(name = "image", length = 60)
+	@Column(name = "image", length = 1000)
 	private String image;
 
 	@ManyToOne
