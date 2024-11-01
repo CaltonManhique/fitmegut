@@ -23,7 +23,8 @@ import java.util.List;
 @RequestMapping("/wardrobe")
 public class WardrobeManagerController {
 
-    private static final String UPLOADED_ITEMS_DIRECTORY = System.getProperty("user.dir") + "/items";
+//    private static final String UPLOADED_ITEMS_DIRECTORY = System.getProperty("user.dir") + "/items";
+    private static final String UPLOADED_ITEMS_DIRECTORY = "/Users/xiluva/fitmegut/wardrobe/items";
 
     private ItemServiceInterface itemService;
     private WardrobeServiceInterface wardrobeService;
@@ -104,7 +105,6 @@ public class WardrobeManagerController {
 
     private static ItemDto getItemDto(WardrobeManagerDto wardrobeManagerDto, StringBuilder fileNames, WardrobeDto savedWardrobeDto) {
         String imageName = UPLOADED_ITEMS_DIRECTORY + "/" + fileNames.toString();
-        System.out.println(imageName);
         ItemDto itemDto = new ItemDto(wardrobeManagerDto.getItemDto().getItemName(), wardrobeManagerDto.getItemDto().getItemBrand(),
                 wardrobeManagerDto.getItemDto().getSize(), wardrobeManagerDto.getItemDto().getColor(),
                 wardrobeManagerDto.getItemDto().getItemCondition(), wardrobeManagerDto.getItemDto().getDescription(),
@@ -124,7 +124,6 @@ public class WardrobeManagerController {
     @PostMapping("/edit/{id}")
     public String processEditItem(@Valid @PathVariable("id") Long id, @ModelAttribute("editItem") ItemDto dto,
                                   BindingResult bindingResult) {
-        System.out.println(id + " Controller" + dto.getItemName());
         if (bindingResult.hasErrors()) {
             return "wardrobe/edit-item";
         }
