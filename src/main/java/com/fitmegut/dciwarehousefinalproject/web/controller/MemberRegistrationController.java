@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @Controller
 @RequestMapping("/registration")
 public class MemberRegistrationController {
@@ -29,10 +31,10 @@ public class MemberRegistrationController {
     }
 
     @PostMapping
-    public @ResponseBody String registerMemberAccount(@Valid @ModelAttribute("member") MemberRegistrationDto registrationDto,
+    public String registerMemberAccount(@Valid @ModelAttribute("member") MemberRegistrationDto registrationDto,
                                                       HttpServletRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "registration";
+            return "member/registration";
         } else {
             memberService.save(registrationDto, getSiteURL(request));
             return "member/verify_email";
@@ -57,12 +59,13 @@ public class MemberRegistrationController {
     @PostMapping("/passwordRecover")
     public String passwordRecover(@Valid @ModelAttribute("newPassword") SendEmailDto emailDto,
                                   HttpServletRequest request, BindingResult bindingResult) {
-
+        System.out.println("Starting password recover");
         if (bindingResult.hasErrors()) {
             return "member/new-password";
         } else {
+            System.out.println("Middle password recover: " + emailDto.getEmail());
             memberService.sendPasswordResetEmail(emailDto.getEmail(), getSiteURL(request));
-
+            System.out.println("Password recover email sent");
             return "member/verify_email";
         }
     }
@@ -79,11 +82,13 @@ public class MemberRegistrationController {
 
     @PostMapping("/processNewPwd")
     public String processNewPassword(@Valid @ModelAttribute("newPassword") PasswordRecoverDto passwordRecoverDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors() || !passwordRecoverDto.getNewPassword().equals(passwordRecoverDto.getRepeatPassword())) {
+        if (!Objects.equals(passwordRecoverDto.getNewPassword(),passwordRecoverDto.getRepeatPassword())) {
+            System.out.println(passwordRecoverDto.getNewPassword() + " vs " + passwordRecoverDto.getRepeatPassword());
             return "member/password-recovering";
         }
 
         MemberRegistrationDto registrationDto = memberService.findByEmail(passwordRecoverDto.getEmail());
+        System.out.println("Here " + registrationDto.getEmail());
         registrationDto.setPassword(passwordRecoverDto.getNewPassword());
         memberService.save(registrationDto);
 

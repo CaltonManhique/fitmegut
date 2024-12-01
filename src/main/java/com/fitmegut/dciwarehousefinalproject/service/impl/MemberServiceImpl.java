@@ -145,7 +145,7 @@ public class MemberServiceImpl implements MemberServiceInterface {
                 }
             }
             case RESET_PASSWORD -> {
-                if (member == null || !member.isEnabled()) {
+                if (member == null) {
                     yield false;
                 } else {
                     member.setVerificationCode(null);
